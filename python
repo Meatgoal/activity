@@ -1,0 +1,48 @@
+name = str(input("Whats your name?"))
+age = int(input("Who old are you?"))
+weight = float(input("Whats your weight?"))
+height = float(input("Whats your height?"))
+
+
+def info(name, age, weight, height):
+    print(f"Your name is{name}")
+    print(f"Your age is{age}")
+    print(f"Your weight is{weight}")
+    print(f"Your height is{height}")
+
+def maiority(age):
+    if age >= 18:
+        return True
+    else:
+        return False
+    
+def calculate_IMC(weight, height):
+    return weight/(height*height)
+
+def menu():
+    print("1 -> info")
+    print("2 -> Majority")
+    print("3 -> Calculate IMC")
+    print("4 -> Exit")
+    choice = int(input("Write the number what you can"))
+    return choice
+
+def main():
+    while True:
+        choice = menu()
+        if choice == 1:
+            info(name, age, weight, height)
+
+        elif choice == 2:
+            maiority(age)
+            print(maiority(age))
+
+        elif choice == 3:
+            calculate_IMC(weight, height)
+            print(calculate_IMC(weight, height))
+
+        elif choice == 4:
+            print("Exiting")
+            break
+
+main()
