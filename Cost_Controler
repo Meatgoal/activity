@@ -1,0 +1,221 @@
+import datetime
+import random
+
+# --------------------------------------------------------------------
+# DICIONÁRIOS PRINCIPAIS
+# --------------------------------------------------------------------
+
+# Armazena todos os gastos. Cada lista tem índices paralelos:
+# índice 0 das 4 listas representa o mesmo gasto.
+gastos = {
+    "description": [],     # Nome/descrição do gasto
+    "value": [],           # Valor (float)
+    "data": [],            # Data do gasto (datetime.date)
+    "categoria": []        # Nome da categoria (string)
+}
+
+# Categorias disponíveis para classificação dos gastos
+categorias = {
+    1: "Alimentação",
+    2: "Transporte",
+    3: "Lazer",
+    4: "Saúde",
+    5: "Educação",
+    6: "Outros"
+}
+
+# --------------------------------------------------------------------
+# FUNÇÃO: Adicionar gasto
+# --------------------------------------------------------------------
+def adicionar_gasto():
+    # Entrada da descrição do gasto
+    description = input("Qual foi a despesa? ").strip()
+
+    # Entrada e validação do valor
+    while True:
+        try:
+            value = float(input("Qual o valor da despesa? ").replace(",", "."))
+            break
+        except ValueError:
+            print("Valor inválido. Tente novamente.")
+
+    # Escolha entre data marcada ou data atual
+    opcao = input("Deseja marcar a data da despesa ou deixar como hoje? (hoje/marcar): ").lower()
+
+    if opcao == "marcar":
+        # Usuário escolhe uma data específica
+        while True:
+            try:
+                data = datetime.datetime.strptime(
+                    input("Insira a data (DD/MM/AAAA): "), "%d/%m/%Y"
+                ).date()
+                break
+            except ValueError:
+                print("Data inválida.")
+    else:
+        # Qualquer resposta diferente → assume a data de hoje
+        data = datetime.date.today()
+
+    # Exibe as categorias disponíveis
+    print("\n--------- Categorias ---------")
+    for numero, nome in categorias.items():
+        print(f"{numero}: {nome}")
+
+    # Escolha da categoria pelo número
+    while True:
+        try:
+            escolha = int(input("Escolha uma categoria pelo número: "))
+            categoria_escolhida = categorias[escolha]
+            break
+        except:
+            print("Categoria inválida. Tente novamente.")
+
+    # Salvamento dos dados no dicionário principal
+    gastos["description"].append(description)
+    gastos["value"].append(value)
+    gastos["data"].append(data)
+    gastos["categoria"].append(categoria_escolhida)
+
+# --------------------------------------------------------------------
+# FUNÇÃO: Listar todos os gastos
+# --------------------------------------------------------------------
+def listar_gastos():
+    # Se não houver gastos registrados
+    if not gastos["description"]:
+        print("Nenhum gasto registrado.")
+        return
+
+    print("\n----------- Lista de Gastos -----------")
+
+    # Exibe cada gasto com base no índice
+    for i in range(len(gastos["description"])):
+        print(
+            f"{gastos['data'][i]} | "
+            f"{gastos['categoria'][i]} | "
+            f"{gastos['description'][i]} | "
+            f"R$ {gastos['value'][i]:.2f}"
+        )
+
+    # Mostra o total geral
+    print(f"\nTotal geral: R$ {sum(gastos['value']):.2f}")
+
+# --------------------------------------------------------------------
+# FUNÇÃO: Total por categoria
+# --------------------------------------------------------------------
+def total_categoria():
+    if not gastos["description"]:
+        print("Nenhum gasto registrado.")
+        return
+
+    print("\n----- Total por Categoria -----")
+
+    # Soma todos os gastos categoria por categoria
+    for num, nome in categorias.items():
+        total = sum(
+            gastos["value"][i]
+            for i in range(len(gastos["value"]))
+            if gastos["categoria"][i] == nome
+        )
+        print(f"{nome}: R$ {total:.2f}")
+
+# --------------------------------------------------------------------
+# FUNÇÃO: Filtrar gastos por intervalo de datas
+# --------------------------------------------------------------------
+def filtrar_por_data():
+    if not gastos["description"]:
+        print("Nenhum gasto registrado.")
+        return
+
+    # Entrada da data inicial
+    while True:
+        try:
+            data_inicio = datetime.datetime.strptime(
+                input("Data inicial (DD/MM/AAAA): "), "%d/%m/%Y"
+            ).date()
+            break
+        except ValueError:
+            print("Data inválida.")
+
+    # Entrada da data final
+    while True:
+        try:
+            data_final = datetime.datetime.strptime(
+                input("Data final (DD/MM/AAAA): "), "%d/%m/%Y"
+            ).date()
+            break
+        except ValueError:
+            print("Data inválida.")
+
+    print(f"\n------ Gastos entre {data_inicio} e {data_final} ------")
+
+    encontrado = False
+
+    # Verifica gasto por gasto
+    for i in range(len(gastos["description"])):
+        data_atual = gastos["data"][i]  # já está em formato date
+
+        if data_inicio <= data_atual <= data_final:
+            encontrado = True
+            print(
+                f"Data: {data_atual} | "
+                f"Categoria: {gastos['categoria'][i]} | "
+                f"Descrição: {gastos['description'][i]} | "
+                f"R$ {gastos['value'][i]:.2f}"
+            )
+
+    if not encontrado:
+        print("Nenhum gasto encontrado nesse intervalo.")
+
+# --------------------------------------------------------------------
+# FUNÇÃO: Sortear uma recompensa aleatória
+# --------------------------------------------------------------------
+def sorteio_recompensa():
+    recompensas = [
+        "Um dia de spa",
+        "Uma noite de cinema",
+        "Um jantar especial",
+        "Uma tarde de passeio",
+        "Um livro novo",
+        "Uma sessão de jogos",
+        "Uma sobremesa deliciosa",
+        "Uma massagem relaxante"
+    ]
+    print(f"\n Recompensa sorteada: {random.choice(recompensas)}")
+
+# --------------------------------------------------------------------
+# FUNÇÃO: Menu principal
+# --------------------------------------------------------------------
+def menu():
+    while True:
+        print("\n----------- Menu de Gastos -----------")
+        print("1. Adicionar gasto")
+        print("2. Listar gastos")
+        print("3. Total por categoria")
+        print("4. Filtrar gastos por data")
+        print("5. Sortear recompensa")
+        print("6. Sair")
+
+        escolha = input("Escolha uma opção (1-6): ").strip()
+
+        if escolha == "1":
+            adicionar_gasto()
+        elif escolha == "2":
+            listar_gastos()
+        elif escolha == "3":
+            total_categoria()
+        elif escolha == "4":
+            filtrar_por_data()
+        elif escolha == "5":
+            sorteio_recompensa()
+        elif escolha == "6":
+            resp = input("Tem certeza que deseja sair? (s/n): ").lower()
+            if resp == "s":
+                print("Saindo... Até mais!")
+                break
+        else:
+            print("Opção inválida.")
+
+# --------------------------------------------------------------------
+# INÍCIO DO PROGRAMA
+# --------------------------------------------------------------------
+menu()
